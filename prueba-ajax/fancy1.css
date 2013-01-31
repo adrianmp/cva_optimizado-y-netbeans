@@ -1,0 +1,21 @@
+*
+{
+	margin: 0;
+	padding: 0;
+}
+body
+{
+	background-color: #BBCCDD;
+}
+#contenido
+{
+	width: 70%;
+	height: auto;
+	background-color:  #99AACC;
+	text-align: center;
+	margin: 50px 150px 50px 150px;
+	padding: 6px;
+	-moz-box-shadow: 0px 0px 30px #40404c;
+	-webkit-box-shadow: 0px 0px 10px #40404c;
+}
+	

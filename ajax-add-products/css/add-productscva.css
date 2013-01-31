@@ -1,0 +1,18 @@
+*{ 
+	margin:0;
+	padding:0;
+}
+body
+{
+	text-align:center;
+	background:#FFFFFF;
+}
+#contenido 
+{	
+		margin: 10px auto;
+		padding: 10px;
+		text-align:center;
+		width:70%;
+		background: #FFFFFF;
+		font-size:11px;
+}

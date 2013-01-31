@@ -1,0 +1,53 @@
+/*THEME_NAME: Default*/
+
+
+/* Menu */
+
+#menu-wrap {
+	background: #2E2E2E;	
+}
+
+#menu {
+	width: 850px;
+	height: 40px;
+	margin-left: 20px;
+}
+
+#menu ul {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	line-height: normal;
+}
+
+#menu li {
+	display: inline;
+}
+
+#menu a {
+	float: left;
+	margin-right: 6px;
+	padding: 5px 20px 5px 20px;
+	background: #4C4D51;
+	border: 1px #575C5F solid;
+	text-decoration: none;
+	text-transform: uppercase;
+	font-weight: bold;
+	font-size: 11px;
+	color: #FFF;
+	-moz-border-radius:3px;
+	-khtml-border-radius:3px;
+	-webkit-border-radius:3px;
+	border-radius: 3px;	
+}
+
+#menu a:hover {
+	text-decoration: none;
+	background: #983D3A;
+	border: 1px #D45951 solid;
+}
+
+#menu .current a {
+	background: #195479;
+	border: 1px #6297b8 solid;
+}

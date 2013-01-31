@@ -1,0 +1,4 @@
+create table new_products(product_id bigint (30), brand_id bigint(30), product_clave_cva varchar (50), codigo_fabricante varchar(30), product_name varchar (255), ficha_tecnica text, 
+ficha_comercial text, grupo varchar (50), marca varchar (50), disponible int8, precio float (8,2), moneda varchar(30), 
+tipo_cambio float(8,2), fechaactualizatipoc varchar (30) ,total_descuento text, precio_descuento_dls text, descripcion_promocion text, 
+vencimiento_promo text, tipo_producto varchar (50), departamento varchar (50), product_image_uri text);
