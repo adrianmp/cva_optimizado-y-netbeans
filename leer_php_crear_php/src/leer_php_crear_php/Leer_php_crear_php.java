@@ -130,6 +130,7 @@ public class Leer_php_crear_php {
         String linea ="";
         String fuera="";
         String numero = "";
+        String otro = "";
         boolean escribir = false;
         int bandera = 0;
         for(int i=0;i<c;i++)
@@ -154,7 +155,9 @@ public class Leer_php_crear_php {
                     if(cadena.contains("SELECT product_clave_cva FROM products WHERE product_clave_cva <> '' ORDER BY product_clave_cva ASC"))
                     {
                         numero = "SELECT product_clave_cva FROM products WHERE product_clave_cva <> '' AND product_brand = "+(b+1)+" ORDER BY product_clave_cva ASC";
+                        otro = "SELECT product_clave_cva FROM new_products WHERE product_clave_cva <> '' AND brand_id= "+(b+1)+" ORDER BY product_clave_cva ASC";
                         cadena = cadena.replace("SELECT product_clave_cva FROM products WHERE product_clave_cva <> '' ORDER BY product_clave_cva ASC", numero);
+                        cadena = cadena.replace("SELECT product_clave_cva FROM new_products WHERE product_clave_cva <> '' AND ORDER BY product_clave_cva ASC", otro);
                     }
                     if(cadena.contains("arte"))
                         cadena = cadena.replace("arte", ""+(b+1));
@@ -192,7 +195,26 @@ public class Leer_php_crear_php {
         System.out.println("No se pudo escribir en el archivo "+ ex);
         }
     }
-    
+    public void link()
+    {
+        String link ="";
+        link = "<a id='cva' href='  hola'>asol</a><br/>";
+        String ph = null, linea="";
+        for(int i=0;i<c;i++)
+        {
+            ph = modelos[i]+".php";
+            if(ph.contains("%20"))
+            {
+                ph = ph.replace("%20", "");
+            }
+            linea = link.replace("hola", ph);
+            linea = linea.replace("asol", modelos[i]);
+            if(linea.contains("%20"))
+                linea = linea.replace("%20", "");
+            System.out.println(linea);
+            
+        }
+    }
     public static void main(String[] args) {
         // TODO code application logic here
         Leer_php_crear_php p = new Leer_php_crear_php();
@@ -201,5 +223,6 @@ public class Leer_php_crear_php {
         p.mandar();
         p.leer_ph();
         p.formular_msj();
+        p.link();
     }
 }
