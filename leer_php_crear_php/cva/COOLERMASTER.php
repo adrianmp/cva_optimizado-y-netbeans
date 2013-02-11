@@ -1,9 +1,35 @@
 <?php
-
+	session_start();
 	$is_admin_client_page = TRUE;
-	include ('include/init.php');
+	if (file_exists('../include/bdconnect.php'))
+		include '../include/bdconnect.php';
+	else
+		header('Location: maintenance.html');
+	include '../include/functions.php';
+
+	$logged_in = $client_logged_in = FALSE;
+	// if session is not set redirect the user to logout
+	if(isset($_SESSION['uid']) && !empty($_SESSION['uid']) && $_SESSION['uid']) {
+		$logged_in = TRUE;
+		$uid = $_SESSION['uid'];
+		$user = user($uid);
+		$_SESSION['cid'] = $cid = 0;
+		if (!$user['user_status'])
+			header('Location: logout');
+	} 
 	
-	
+	if(isset($_SESSION['cid']) && !empty($_SESSION['cid']) && $_SESSION['cid']) {
+		$client_logged_in = TRUE;
+		$cid = $_SESSION['cid'];
+		$client = client($cid);
+		if (!$client['client_status'])
+			header('Location: logout');
+	}
+	if(!isset($_SESSION['cid']) && $is_admin_client_page)
+		header("Location: /?error");
+	include '../include/es.php';
+?>
+<?php
 	function download_page($path){
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL,$path);
@@ -18,7 +44,7 @@
 	
 	//Variables
 	$disponible = 0;
-	$brand_id = 145;
+	$brand_id = 47;
 	$result_new = 0;
 	////////////////Consulta en products///////////////////////////////
 	$sql = "SELECT product_clave_cva FROM products WHERE product_clave_cva <> '' AND product_brand = 145 ORDER BY product_clave_cva ASC";
@@ -165,4 +191,3 @@
 			echo '<h4>La actualizacion Finalizo Cierra esta Ventana</h4>';
 		else
 			echo "<h4>Esta Marca ya Esta Actualizada Cierra esta Ventana</h4>";
-?>

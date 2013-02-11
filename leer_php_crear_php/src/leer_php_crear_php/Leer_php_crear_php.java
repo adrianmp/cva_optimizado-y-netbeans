@@ -161,8 +161,8 @@ public class Leer_php_crear_php {
                     }
                     if(cadena.contains("arte"))
                         cadena = cadena.replace("arte", ""+(b+1));
-                    escribir_archivo(cadena, ph);
-                    //System.out.println((b+1));
+                    //escribir_archivo(cadena, ph);
+                    System.out.println(modelos[i]+' '+(b+1));
                     break;
                 }
                 else
@@ -181,8 +181,8 @@ public class Leer_php_crear_php {
                 cadena = enphp.replace("3COM", modelos[i]);
                 if(cadena.contains("arte"))
                         cadena = cadena.replace("arte", ""+0);
-                escribir_archivo(cadena, ph);
-//                System.out.println("1");
+                //escribir_archivo(cadena, ph);
+                System.out.println(modelos[i]+' ');
             }
         }
     }
@@ -201,20 +201,19 @@ public class Leer_php_crear_php {
     public void link()
     {
         String link ="";
-        link = "<a id='cva' href='  hola'>asol</a><br/>";
+        link = "http://www.grupocva.com/catalogo_clientes_xml/lista_precios.xml?cliente=26683&marca=3COM&grupo%&clave=%&codigo=%&sucursales=1&tc=1&tipo=1&depto=1&dt=1&dc=1&promos=1";
         String ph = null, linea="";
         for(int i=0;i<c;i++)
         {
-            ph = modelos[i]+".php";
+            ph = modelos[i];
             if(ph.contains("%20"))
             {
                 ph = ph.replace("%20", "");
             }
-            linea = link.replace("hola", ph);
-            linea = linea.replace("asol", modelos[i]);
+            linea = link.replace("3COM", ph);
             if(linea.contains("%20"))
                 linea = linea.replace("%20", "");
-            System.out.println(linea);
+            System.out.println("$this->cva[] = '"+linea+"';");
             
         }
     }
@@ -226,6 +225,6 @@ public class Leer_php_crear_php {
         p.mandar();
         p.leer_ph();
         p.formular_msj();
-        p.link();
+//        p.link();
     }
 }
