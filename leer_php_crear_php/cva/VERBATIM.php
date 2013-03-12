@@ -28,6 +28,7 @@
 	if(!isset($_SESSION['cid']) && $is_admin_client_page)
 		header("Location: /?error");
 	include '../include/es.php';
+	//include 'conexion.php';
 ?>
 <?php
 	class Update 
@@ -35,7 +36,7 @@
 		
 		//declaracion de atributos privados
 		private $sXML = "",$catalogo_new  = array();
-		private $catalogo_cva  = array(), $product_category = array();
+		private $catalogo_cva  = array(), $product_category = array(), $product_next_update = array(), $product_status= array();
 		
 		function __construct() 
 		{
@@ -54,7 +55,6 @@
 			$conversion = (float) $converted_amount[0];*/
 			// $conversion = preg_replace('/[x00-x08x0B-x1F]/', '', $conversion);
 			$con = (float) $conversion;
-			echo $amount."    ".$con."    ";
 			$con = $con * $amount;
 			$con = round($con, 2);
 			//echo ($converted_amount[0]+.4)."<br/>";
@@ -62,7 +62,6 @@
 			// $rhs_text = ucwords(str_replace($converted_amount[0],"",$result[3]));
 			//Make right hand side string
 			$rhs = $con;
-			echo $rhs."<br/>";
 			return $rhs;
 		}
 
@@ -103,7 +102,7 @@
 		
 		function products()
 		{
-			$sql = "SELECT product_clave_cva, product_category FROM products WHERE product_clave_cva <> '' AND product_brand = 9 ORDER BY product_clave_cva ASC";
+			$sql = "SELECT product_clave_cva, product_category, product_next_update, product_status FROM products WHERE product_clave_cva <> '' AND product_brand = 9 ORDER BY product_clave_cva ASC";
 			$catalogo_cva_sql = mysql_query($sql);
 			$to = mysql_num_rows(mysql_query($sql));
 			if($to!=0)
@@ -111,6 +110,8 @@
 				while($row = mysql_fetch_array($catalogo_cva_sql)){
 					$this->catalogo_cva[] = $row[0];
 					$this->product_category[] = $row[1];
+					$this->product_next_update[] = $row[2];
+					$this->product_status[] = $row[3];
 				}
 				$to = 1;
 			} 
@@ -126,13 +127,18 @@
 			{
 				if(!in_array($this->catalogo_cva[$i], $this->catalogo_new))
 				{
+					$clave = $i;
+					$tfecha = explode("-", $this->product_next_update[$i]);
 					$temp = '';
 					$query = '';
 					$temp = $this->Clave_Unica($this->catalogo_cva[$i]);
 					if($temp==TRUE)
 					{
-						$query= "UPDATE products SET product_clave_cva = ' ', product_next_update ='".date("Y-m-d")." 19:00:00', product_status = 0  WHERE product_clave_cva='".$this->catalogo_cva[$i]."'";
-						mysql_query($query);
+						if( ($tfecha[0] < 2020) && ($this->product_status[$i] == 1))
+						{
+							$query= "UPDATE products SET product_clave_cva = ' ', product_next_update ='".date("Y-m-d")." 19:00:00', product_status = 0  WHERE product_clave_cva='".$this->catalogo_cva[$i]."'";	
+							mysql_query($query);
+						}
 					}
 					else {
 						$query= "UPDATE products SET  product_next_update ='2020-12-31 19:00:00', product_status = 0  WHERE product_clave_cva='".$this->catalogo_cva[$i]."'";
@@ -146,7 +152,7 @@
 		public function XML()
 		{
 			$num = $this->products();
-			$pos = 0;
+			$p = 0;
 			if($this->sXML)
 			{
 				$catalogo = new SimpleXMLElement($this->sXML);
@@ -155,7 +161,8 @@
 					$this->catalogo_new[] = $item->clave;
 					if ($num) 
 					{
-						if(in_array($item->clave, $this->catalogo_cva))
+						$clave = array_search($item->clave, $this->catalogo_cva);
+						if($clave != null)
 						{
 							
 							$disponible = $item->disponible + $item->disponibleCD 
@@ -170,18 +177,19 @@
 							$item->VENTAS_TUXTLA + $item->VENTAS_VERACRUZ + 
 							$item->VENTAS_VILLAHERMOSA;													
 							$sql = "";
+							//echo $item->clave."  ".$this->product_category[$clave]."     ".$item->grupo."<br/>";
 							if($item->moneda =="Dolares")
 							{
 								$dolar =(float) $item->precio;
 								$p = (float) $this->google($dolar, $item->tipocambio);
-								$product_price_mx = $this->load_price($this->product_category[$pos], $p);	
-								$sql = "UPDATE products SET product_buy_mx = " . $p  . " , product_status = 1, product_price_mx =".$product_price_mx." , product_next_update ='0000-00-00 17:00:00'";
+								$product_price_mx = $this->load_price($this->product_category[$clave], $p);	
+								$sql = "UPDATE products SET product_buy_mx = " . $p  . " , product_status = 1, product_featured_end ='0000-00-00 00:00:00', product_price_mx =".$product_price_mx.",  product_buy_mx_offer = 0.00 , product_next_update ='0000-00-00 17:00:00'";
 								$dolares = TRUE;
 							}
 							else 
 							{
-								$product_price_mx  = $this->load_price($this->product_category[$pos], $item->precio);
-								$sql = "UPDATE products SET product_buy_mx = " . $item->precio  . " , product_status = 1,  product_price_mx =".$product_price_mx." , product_next_update ='0000-00-00 17:00:00'";
+								$product_price_mx  = $this->load_price($this->product_category[$clave], $item->precio);
+								$sql = "UPDATE products SET product_buy_mx = " . $item->precio  . " , product_status = 1, product_featured_end ='0000-00-00 00:00:00',  product_buy_mx_offer = 0.00 ,  product_price_mx =".$product_price_mx." , product_next_update ='0000-00-00 17:00:00'";
 								$dolares = FALSE;
 							}
 							if($item->PrecioDescuento!="Sin Descuento")
@@ -189,19 +197,20 @@
 								
 								if($dolares == TRUE)
 								{
-									$product_buy_mx_offer = $this->load_price($this->product_category[$pos], $this->google($item->PrecioDescuento, $item->tipocambio));
+									$p1 = $this->google($item->PrecioDescuento, $item->tipocambio);
+									$product_buy_mx_offer = $this->load_price($this->product_category[$clave], $p1);
 									$pieces = explode("/", $item->VencimientoPromocion);
 									$VencimientoPromocion = $pieces[2]."-".$pieces[1]."-".$pieces[0];
-									$sql = "UPDATE products SET product_buy_mx = " . $p  . " , product_status = 1,  product_buy_mx_offer =".$this->google($item->PrecioDescuento, $item->tipocambio)."\n"
-									." , product_price_mx =".$product_buy_mx_offer." , product_featured_end ='".$VencimientoPromocion."19:00:00' , product_next_update ='0000-00-00 17:00:00'";
+									$sql = "UPDATE products SET product_buy_mx = " . $p  . " , product_status = 1,  product_buy_mx_offer =".$p1."\n"
+									." , product_price_mx =".$product_buy_mx_offer." , product_featured_end ='".$VencimientoPromocion." 19:00:00' , product_next_update ='0000-00-00 17:00:00'";
 								}
 								else
 								{
-									$product_buy_mx_offer = $this->load_price($this->product_category[$pos], $item->PrecioDescuento);
+									$product_buy_mx_offer = $this->load_price($this->product_category[$clave], $item->PrecioDescuento);
 									$pieces = explode("/", $item->VencimientoPromocion);
 									$VencimientoPromocion = $pieces[2]."-".$pieces[1]."-".$pieces[0];
 									$sql = "UPDATE products SET product_buy_mx = " . $item->precio  . " ,  product_status = 1,  product_buy_mx_offer =".$item->PrecioDescuento."\n,".
-									"  product_price_mx =".$product_buy_mx_offer." , product_featured_end ='".$VencimientoPromocion."19:00:00' , product_next_update ='0000-00-00 17:00:00'";
+									"  product_price_mx =".$product_buy_mx_offer." , product_featured_end ='".$VencimientoPromocion." 19:00:00' , product_next_update ='0000-00-00 17:00:00'";
 								}
 							}
 							if($disponible==0)

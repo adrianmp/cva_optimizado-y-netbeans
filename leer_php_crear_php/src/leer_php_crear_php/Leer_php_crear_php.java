@@ -182,7 +182,7 @@ public class Leer_php_crear_php {
                 if(cadena.contains("arte"))
                         cadena = cadena.replace("arte", ""+0);
                 escribir_archivo(cadena, ph);
-                System.out.println(modelos[i]+' ');
+                //System.out.println(modelos[i]+' ');
             }
         }
     }
