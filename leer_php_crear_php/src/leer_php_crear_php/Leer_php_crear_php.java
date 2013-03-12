@@ -15,7 +15,7 @@ import java.util.logging.Logger;
  */
 public class Leer_php_crear_php {
     
-    String[] modelos = new String[101];
+    String[] modelos = new String[1000];
     String[] bejattos = new String[149];
     int c = 0, cb = 0;
     File php = null, archivo = null;
@@ -45,7 +45,7 @@ public class Leer_php_crear_php {
                         linea = linea.replace(" ", "%20");
                     }
                     modelos[c] = linea;
-//                    System.out.println(modelos[c]);
+                    System.out.println(modelos[c]);
                     c++;                    
                 }
             }
@@ -152,16 +152,16 @@ public class Leer_php_crear_php {
                         ph = ph.replace("%20", "");
                     }
                     cadena = enphp.replace("3COM", modelos[i]);
-                    if(cadena.contains("SELECT product_clave_cva FROM products WHERE product_clave_cva <> '' ORDER BY product_clave_cva ASC"))
+                    if(cadena.contains("SELECT product_clave_cva, product_category, product_next_update, product_status FROM products WHERE product_clave_cva <> '' ORDER BY product_clave_cva ASC"))
                     {
-                        numero = "SELECT product_clave_cva FROM products WHERE product_clave_cva <> '' AND product_brand = "+(b+1)+" ORDER BY product_clave_cva ASC";
-                        otro = "SELECT product_clave_cva FROM new_products WHERE product_clave_cva <> '' AND brand_id= "+(b+1)+" ORDER BY product_clave_cva ASC";
-                        cadena = cadena.replace("SELECT product_clave_cva FROM products WHERE product_clave_cva <> '' ORDER BY product_clave_cva ASC", numero);
-                        cadena = cadena.replace("SELECT product_clave_cva FROM new_products WHERE product_clave_cva <> '' ORDER BY product_clave_cva ASC", otro);
+                        numero = "SELECT product_clave_cva, product_category, product_next_update, product_status FROM products WHERE product_clave_cva <> '' AND product_brand = "+(b+1)+" ORDER BY product_clave_cva ASC";
+                        //otro = "SELECT product_clave_cva FROM new_products WHERE product_clave_cva <> '' AND brand_id= "+(b+1)+" ORDER BY product_clave_cva ASC";
+                        cadena = cadena.replace("SELECT product_clave_cva, product_category, product_next_update, product_status FROM products WHERE product_clave_cva <> '' ORDER BY product_clave_cva ASC", numero);
+                        //cadena = cadena.replace("SELECT product_clave_cva FROM new_products WHERE product_clave_cva <> '' ORDER BY product_clave_cva ASC", otro);
                     }
                     if(cadena.contains("arte"))
                         cadena = cadena.replace("arte", ""+(b+1));
-                    //escribir_archivo(cadena, ph);
+                    escribir_archivo(cadena, ph);
                     System.out.println(modelos[i]+' '+(b+1));
                     break;
                 }
@@ -181,7 +181,7 @@ public class Leer_php_crear_php {
                 cadena = enphp.replace("3COM", modelos[i]);
                 if(cadena.contains("arte"))
                         cadena = cadena.replace("arte", ""+0);
-                //escribir_archivo(cadena, ph);
+                escribir_archivo(cadena, ph);
                 System.out.println(modelos[i]+' ');
             }
         }
