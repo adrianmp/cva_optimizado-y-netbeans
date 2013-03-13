@@ -118,6 +118,8 @@
 			return $to;
 		}
 		
+
+		
 		function eliminados()
 		{
 			$query="";
@@ -136,12 +138,12 @@
 					{
 						if( ($tfecha[0] < 2020) && ($this->product_status[$i] == 1))
 						{
-							$query= "UPDATE products SET product_clave_cva = ' ', product_next_update ='".date("Y-m-d")." 19:00:00', product_status = 0  WHERE product_clave_cva='".$this->catalogo_cva[$i]."'";	
+							$query= "UPDATE products SET  product_next_update ='".date("Y-m-d")." 19:00:00', product_status = 0  WHERE product_clave_cva='".$this->catalogo_cva[$i]."'";	
 							mysql_query($query);
 						}
 					}
 					else {
-						$query= "UPDATE products SET  product_next_update ='2020-12-31 19:00:00', product_status = 0  WHERE product_clave_cva='".$this->catalogo_cva[$i]."'";
+						$query= "UPDATE products SET  product_next_update ='2020-12-31 23:00:00', product_status = 0  WHERE product_clave_cva='".$this->catalogo_cva[$i]."'";
 						mysql_query($query);
 					}
 				}
@@ -202,7 +204,7 @@
 									$pieces = explode("/", $item->VencimientoPromocion);
 									$VencimientoPromocion = $pieces[2]."-".$pieces[1]."-".$pieces[0];
 									$sql = "UPDATE products SET product_buy_mx = " . $p  . " , product_status = 1,  product_buy_mx_offer =".$p1."\n"
-									." , product_price_mx =".$product_buy_mx_offer." , product_featured_end ='".$VencimientoPromocion." 19:00:00' , product_next_update ='0000-00-00 17:00:00'";
+									." , product_price_mx =".$product_buy_mx_offer." , product_featured_end ='".$VencimientoPromocion." 19:00:00' , product_next_update ='".$VencimientoPromocion." 09:00:00'";
 								}
 								else
 								{
@@ -210,7 +212,7 @@
 									$pieces = explode("/", $item->VencimientoPromocion);
 									$VencimientoPromocion = $pieces[2]."-".$pieces[1]."-".$pieces[0];
 									$sql = "UPDATE products SET product_buy_mx = " . $item->precio  . " ,  product_status = 1,  product_buy_mx_offer =".$item->PrecioDescuento."\n,".
-									"  product_price_mx =".$product_buy_mx_offer." , product_featured_end ='".$VencimientoPromocion." 19:00:00' , product_next_update ='0000-00-00 17:00:00'";
+									"  product_price_mx =".$product_buy_mx_offer." , product_featured_end ='".$VencimientoPromocion." 19:00:00' , product_next_update ='".$VencimientoPromocion." 09:00:00'";
 								}
 							}
 							if($disponible==0)

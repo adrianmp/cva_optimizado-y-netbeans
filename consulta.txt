@@ -1,0 +1,27 @@
+SELECT `product_clave_cva` , `product_next_update` , `product_name` , `product_price_mx`
+FROM `products`
+WHERE (
+`product_next_update` = '2013-03-12 19:00:00' && `product_next_update` = '2013-03-12 17:00:00'
+)
+ORDER BY `products`.`product_next_update` ASC
+LIMIT 0 , 30
+
+SELECT `product_clave_cva` , `product_next_update` , `product_name` , `product_price_mx`
+FROM `products`
+WHERE (
+`product_next_update` = '2013-03-12 19:00:00' || `product_next_update` = '2013-03-12 17:00:00'
+)
+ORDER BY `products`.`product_next_update` ASC
+LIMIT 0 , 30
+
+
+SELECT `product_clave_cva` , `product_sku` , `product_clave_ctin` , `product_next_update` , `product_status`
+FROM products
+WHERE (
+(
+product_status =1
+AND product_featured_end <= CURRENT_DATE( )
+) || ( DATEDIFF( NOW( ) , product_updated ) <90
+AND product_next_update <= CURRENT_DATE( ) )
+)
+AND product_clave_cva = '' || ( product_status =0 AND ( `product_next_update` = '2013-03-12 19:00:00' || `product_next_update` = '2013-03-12 17:00:00' ) )

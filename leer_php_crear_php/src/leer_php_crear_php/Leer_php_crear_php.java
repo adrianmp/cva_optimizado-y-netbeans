@@ -45,7 +45,7 @@ public class Leer_php_crear_php {
                         linea = linea.replace(" ", "%20");
                     }
                     modelos[c] = linea;
-                    System.out.println(modelos[c]);
+//                    System.out.println(modelos[c]);
                     c++;                    
                 }
             }
@@ -161,8 +161,8 @@ public class Leer_php_crear_php {
                     }
                     if(cadena.contains("arte"))
                         cadena = cadena.replace("arte", ""+(b+1));
-                    escribir_archivo(cadena, ph);
-                    System.out.println(modelos[i]+' '+(b+1));
+                    //escribir_archivo(cadena, ph);
+                    //System.out.println(modelos[i]+' '+(b+1));
                     break;
                 }
                 else
@@ -182,7 +182,7 @@ public class Leer_php_crear_php {
                 if(cadena.contains("arte"))
                         cadena = cadena.replace("arte", ""+0);
                 escribir_archivo(cadena, ph);
-                //System.out.println(modelos[i]+' ');
+                System.out.println(modelos[i]+' ');
             }
         }
     }
