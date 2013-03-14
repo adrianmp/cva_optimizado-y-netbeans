@@ -161,8 +161,9 @@ public class Leer_php_crear_php {
                     }
                     if(cadena.contains("arte"))
                         cadena = cadena.replace("arte", ""+(b+1));
-                    //escribir_archivo(cadena, ph);
-                    //System.out.println(modelos[i]+' '+(b+1));
+                    escribir_archivo(cadena, ph);
+                   // modelos[i]+' '+(b+1));
+                   // System.out.println("<a href='cva-update/"+modelos[i].replace("%20", "") +".php' TARGET='_blank'>"+modelos[i].replace("%20", "")+"</a><br/>");
                     break;
                 }
                 else
@@ -181,8 +182,8 @@ public class Leer_php_crear_php {
                 cadena = enphp.replace("3COM", modelos[i]);
                 if(cadena.contains("arte"))
                         cadena = cadena.replace("arte", ""+0);
-                escribir_archivo(cadena, ph);
-                System.out.println(modelos[i]+' ');
+//               escribir_archivo(cadena, ph);
+//                System.out.println(modelos[i]+' ');
             }
         }
     }
