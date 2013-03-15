@@ -33,3 +33,12 @@ AND product_featured_end <= CURRENT_DATE( )
 AND product_next_update <= CURRENT_DATE( ) )
 )
 AND product_clave_cva = '' || ( product_status =0 AND `product_next_update` LIKE '%23:23:23%' )
+
+SELECT `product_clave_cva` , `product_sku` , `product_clave_ctin` , `product_next_update` , `product_status`,`product_featured_end`
+FROM products WHERE ( ( product_status =1 AND product_featured_end <= CURRENT_DATE( ) ) 
+|| ( DATEDIFF( NOW( ) , product_updated ) <90 AND product_next_update <= CURRENT_DATE( ) ) )
+AND product_clave_cva = '' || ( product_status =0 AND `product_next_update` LIKE '%23:23:23%' ) 
+|| 
+( product_status =1 AND (  product_featured_end > '0000-00-00 00:00:00' and  product_featured_end <= '2013-04-01 09:00:00' )  )
+ORDER BY `products`.`product_featured_end` DESC
+limit 500
