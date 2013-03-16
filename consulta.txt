@@ -42,3 +42,5 @@ AND product_clave_cva = '' || ( product_status =0 AND `product_next_update` LIKE
 ( product_status =1 AND (  product_featured_end > '0000-00-00 00:00:00' and  product_featured_end <= '2013-04-01 09:00:00' )  )
 ORDER BY `products`.`product_featured_end` DESC
 limit 500
+
+INSERT INTO `caliz`(`a`, `b`) VALUES ("2013-03-15 09:00:00" + INTERVAL 7 DAY,3)

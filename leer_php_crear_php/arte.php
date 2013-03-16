@@ -124,7 +124,7 @@
 		{
 			$query="";
 			$size = sizeof($this->catalogo_cva);
-			echo count($this->catalogo_cva);
+			//echo count($this->catalogo_cva);
 			for ($i=0; $i < $size; $i++) 
 			{
 				if(!in_array($this->catalogo_cva[$i], $this->catalogo_new))
@@ -148,7 +148,82 @@
 					}
 				}
 			}
+			echo "<h1>La actualización Termino!!!!!</h1>";
 					
+		}
+		
+		function getMonthDays($Month, $Year)
+		{
+		   //Si la extensión que mencioné está instalada, usamos esa.
+		   if( is_callable("cal_days_in_month"))
+		   {
+		      return cal_days_in_month(CAL_GREGORIAN, $Month, $Year);
+		   }
+		   else
+		   {
+		      //Lo hacemos a mi manera.
+		      return date("d",mktime(0,0,0,$Month+1,0,$Year));
+		   }
+		}
+		
+		function day($years, $months, $days)
+		{
+			//dia Actual
+			$year = date("Y");
+			$month = date("m");
+			$day = date("d");			
+			//Calculo diferencias
+			$y = $years - $year;
+			$d = $days - $day;
+			$m = $months - $month;
+			$dm = $this->getMonthDays($month, $year);
+			$total = $dm - $day;
+			//comparaciones
+			if($y == 0)
+			{
+				if($m == 0)
+				{
+					if ($d>=0 && $d<6) 
+						return '0';
+					else
+					{
+						return ($d<0) ? '0' : '1';
+					}
+				}	
+				else 
+				{
+					if($m>0)
+					{
+						if($days >= 1 && $days < 6)
+							return ($total > 5 && $total<31) ? "1" : "0" ;
+						else 
+							return '1';
+					}
+				}
+			}
+			else 
+			{
+				if($m == 0)
+					return ($d>=0 && $d<6) ? '0' : '1'; 
+				else 
+				{
+					if($m>0)
+					{
+						if($days >= 1 && $days < 6)
+							return ($total > 5 && $total<31) ? "1" : "0" ;
+						else 
+							return '1';
+					}
+					else 
+					{
+						if($days >= 1 && $days < 6)
+							return ($total > 5 && $total<31) ? "1" : "0" ;
+						else 
+							return '1';
+					}
+				}
+			}
+						
 		}
 		
 		public function XML()
@@ -166,7 +241,7 @@
 						if(in_array($item->clave, $this->catalogo_cva, FALSE))
 						{
 							$clave = array_search($item->clave, $this->catalogo_cva, FALSE);
-							echo $clave."<br/>";
+							//echo $clave."<br/>";
 							
 							$disponible = $item->disponible + $item->disponibleCD 
 							+ $item->VENTAS_CANCUN + 
@@ -180,40 +255,51 @@
 							$item->VENTAS_TUXTLA + $item->VENTAS_VERACRUZ + 
 							$item->VENTAS_VILLAHERMOSA;													
 							$sql = "";
-							echo $item->clave."  ".$this->product_category[$clave]."     ".$item->grupo."<br/>";
+							//echo $item->clave."  ".$this->product_category[$clave]."     ".$item->grupo."<br/>";
 							if($item->moneda =="Dolares")
 							{
 								$dolar =(float) $item->precio;
 								$p = (float) $this->google($dolar, $item->tipocambio);
 								$product_price_mx = $this->load_price($this->product_category[$clave], $p);	
-								$sql = "UPDATE products SET product_buy_mx = " . $p  . " , product_status = 1, product_featured = 0, product_featured_end ='0000-00-00 00:00:00', product_price_mx =".$product_price_mx.",  product_buy_mx_offer = 0.00 , product_next_update ='0000-00-00 00:00:00'";
+								$sql = "UPDATE products SET product_buy_mx = " . $p  . " , product_status = 1, product_featured = 0, product_featured_end ='0000-00-00 00:00:00', product_price_mx =".$product_price_mx.",\n".
+								" product_buy_mx_offer = 0.00 , product_next_update ='".date("Y-m-d")." 19:00:00'+ INTERVAL 7 DAY, product_updated = NOW()";
 								$dolares = TRUE;
 							}
 							else 
 							{
 								$product_price_mx  = $this->load_price($this->product_category[$clave], $item->precio);
-								$sql = "UPDATE products SET product_buy_mx = " . $item->precio  . " , product_status = 1, product_featured = 0, product_featured_end ='0000-00-00 00:00:00',  product_buy_mx_offer = 0.00 ,  product_price_mx =".$product_price_mx." , product_next_update ='0000-00-00 00:00:00'";
+								$sql = "UPDATE products SET product_buy_mx = " . $item->precio  . " , product_status = 1, product_featured = 0, product_featured_end ='0000-00-00 00:00:00',\n".
+								" product_buy_mx_offer = 0.00 ,  product_price_mx =".$product_price_mx." , product_next_update ='".date("Y-m-d")." 19:00:00'+ INTERVAL 7 DAY, product_updated = NOW()";
 								$dolares = FALSE;
 							}
 							if($item->PrecioDescuento!="Sin Descuento")
 							{
-								
+								$pieces = explode("/", $item->VencimientoPromocion);
+								$VencimientoPromocion = $pieces[2]."-".$pieces[1]."-".$pieces[0];
+								$date =$this-> day($pieces[2], $pieces[1], $pieces[0]);
 								if($dolares == TRUE)
 								{
 									$p1 = $this->google($item->PrecioDescuento, $item->tipocambio);
 									$product_buy_mx_offer = $this->load_price($this->product_category[$clave], $p1);
-									$pieces = explode("/", $item->VencimientoPromocion);
-									$VencimientoPromocion = $pieces[2]."-".$pieces[1]."-".$pieces[0];
 									$sql = "UPDATE products SET product_buy_mx = " . $p  . " , product_status = 1,  product_buy_mx_offer =".$p1."\n"
-									." , product_price_mx =".$product_buy_mx_offer." , product_featured_end ='".$VencimientoPromocion." 09:00:00' , product_next_update ='".$VencimientoPromocion." 09:00:00', product_featured = 1";
+									." , product_price_mx =".$product_buy_mx_offer." , product_featured_end ='".$VencimientoPromocion." 09:00:00' ,\n".
+									" product_featured = 1, product_updated = NOW(), product_next_update = ";
+									if($date)
+										$sql .= "'".$VencimientoPromocion." 09:00:00' - INTERVAL 5 DAY ";
+									else
+										$sql .= "'".$VencimientoPromocion." 09:00:00'";
+									
 								}
 								else
 								{
 									$product_buy_mx_offer = $this->load_price($this->product_category[$clave], $item->PrecioDescuento);
-									$pieces = explode("/", $item->VencimientoPromocion);
-									$VencimientoPromocion = $pieces[2]."-".$pieces[1]."-".$pieces[0];
 									$sql = "UPDATE products SET product_buy_mx = " . $item->precio  . " ,  product_status = 1,  product_buy_mx_offer =".$item->PrecioDescuento."\n,".
-									"  product_price_mx =".$product_buy_mx_offer." , product_featured_end ='".$VencimientoPromocion." 09:00:00' , product_next_update ='".$VencimientoPromocion." 09:00:00', product_featured = 0";
+									"  product_price_mx =".$product_buy_mx_offer." , product_featured_end ='".$VencimientoPromocion." 09:00:00' ,\n".
+									" product_featured = 1, product_updated = NOW(), product_next_update =";
+									if($date)
+										$sql .= "'".$VencimientoPromocion." 09:00:00' - INTERVAL 5 DAY ";
+									else
+										$sql .= "'".$VencimientoPromocion." 09:00:00'";
 								}
 							}
 							if($disponible==0)
