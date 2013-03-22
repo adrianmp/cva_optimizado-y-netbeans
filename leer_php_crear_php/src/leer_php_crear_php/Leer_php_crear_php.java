@@ -131,6 +131,7 @@ public class Leer_php_crear_php {
         String fuera="";
         String numero = "";
         String otro = "";
+        int h = 1;
         boolean escribir = false;
         int bandera = 0;
         for(int i=0;i<c;i++)
@@ -163,7 +164,8 @@ public class Leer_php_crear_php {
                         cadena = cadena.replace("arte", ""+(b+1));
                     escribir_archivo(cadena, ph);
                    // modelos[i]+' '+(b+1));
-                   // System.out.println("<a href='cva-update/"+modelos[i].replace("%20", "") +".php' TARGET='_blank'>"+modelos[i].replace("%20", "")+"</a><br/>");
+//                   System.out.println("<a id='"+h+"' href='cva-update/"+modelos[i].replace("%20", "") +".php' TARGET='_blank' class='btn'>"+modelos[i].replace("%20", "")+"</a><br/>");
+//                   h++;
                     break;
                 }
                 else
@@ -183,7 +185,7 @@ public class Leer_php_crear_php {
                 if(cadena.contains("arte"))
                         cadena = cadena.replace("arte", ""+0);
 //               escribir_archivo(cadena, ph);
-//                System.out.println(modelos[i]+' ');
+                
             }
         }
     }

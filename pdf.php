@@ -16,10 +16,13 @@
 		
 		function day($years, $months, $days)
 		{
-			//dia Actual
-			$year = date("Y");
-			$month = date("m");
-			$day = date("d");			
+			//fecha actual hoy
+			date_default_timezone_set("America/Mexico_City");
+			$hoy = explode ("-",date('Y-m-d'));
+			$year = $hoy[0];
+			$month = $hoy[1];
+			$day = $hoy[2];
+			echo $year."-".$month."-".$day."<br/>";			
 			//Calculo diferencias
 			$y = $years - $year;
 			$d = $days - $day;
@@ -31,7 +34,51 @@
 			{
 				if($m == 0)
 				{
-					if($d>=0 && $d<6)
+					return ($d>=0 && $d<6)  ? '20': '22';
+				}	
+				else 
+				{
+					if($m>0)
+					{
+						if($days >= 1 && $days < 6)
+							return ($total > 5 && $total<31) ? "23" : "24" ;
+						else 
+							return '1';
+					}
+				}
+			}
+			else 
+			{
+				if($m == 0)
+					return ($d>=0 && $d<6) ? '25' : '26'; 
+				else 
+				{
+					if($m>0)
+					{
+						if($days >= 1 && $days < 6)
+							return ($total > 5 && $total<31) ? "27" : "28" ;
+						else 
+							return '1';
+					}
+					else 
+					{
+						if($days >= 1 && $days < 6)
+							return ($total > 5 && $total<31) ? "29" : "30" ;
+						else 
+							return '1';
+					}
+				}
+			}
+			
+						
+		}
+		echo day("2013","03","25");
+		/*
+		 if($y == 0)
+			{
+				if($m == 0)
+				{
+					ret($d>=0 && $d<6)
 						echo $year."-".$month."-".$day;
 					else
 					{
@@ -101,7 +148,5 @@
 					}
 				}
 			}
-						
-		}
-		day("2013","03","15");
+		 */
 ?>
