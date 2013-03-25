@@ -153,11 +153,11 @@ public class Leer_php_crear_php {
                         ph = ph.replace("%20", "");
                     }
                     cadena = enphp.replace("3COM", modelos[i]);
-                    if(cadena.contains("SELECT product_clave_cva, product_category, product_next_update, product_status FROM products WHERE product_clave_cva <> '' ORDER BY product_clave_cva ASC"))
+                    if(cadena.contains("SELECT product_clave_cva, product_category, product_next_update, product_status, product_stock FROM products WHERE product_clave_cva <> '' ORDER BY product_clave_cva ASC"))
                     {
-                        numero = "SELECT product_clave_cva, product_category, product_next_update, product_status FROM products WHERE product_clave_cva <> '' AND product_brand = "+(b+1)+" ORDER BY product_clave_cva ASC";
+                        numero = "SELECT product_clave_cva, product_category, product_next_update, product_status, product_stock FROM products WHERE product_clave_cva <> '' AND product_brand = "+(b+1)+" ORDER BY product_clave_cva ASC";
                         //otro = "SELECT product_clave_cva FROM new_products WHERE product_clave_cva <> '' AND brand_id= "+(b+1)+" ORDER BY product_clave_cva ASC";
-                        cadena = cadena.replace("SELECT product_clave_cva, product_category, product_next_update, product_status FROM products WHERE product_clave_cva <> '' ORDER BY product_clave_cva ASC", numero);
+                        cadena = cadena.replace("SELECT product_clave_cva, product_category, product_next_update, product_status, product_stock FROM products WHERE product_clave_cva <> '' ORDER BY product_clave_cva ASC", numero);
                         //cadena = cadena.replace("SELECT product_clave_cva FROM new_products WHERE product_clave_cva <> '' ORDER BY product_clave_cva ASC", otro);
                     }
                     if(cadena.contains("arte"))

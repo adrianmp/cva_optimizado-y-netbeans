@@ -140,14 +140,17 @@
 				{
 					$query = '';
 					$temp = '';
-					$true = strstr($this->catalogo_cva[$i], ',', TRUE);
+					$clave1 = str_replace(" ","", trim($this->catalogo_cva[$i]));
+					//echo $clave1."<br/>";
+					$true = strstr($clave1, ',', TRUE);
 					$tfecha = explode("-", $this->product_next_update[$i]);
 					$temp = $this->Clave_Unica($this->catalogo_cva[$i]);
 					if($true)
 					{
-						$clave = explode(",", str_replace(" ","", trim($this->catalogo_cva[$i])) );
+						$clave = explode(",", trim($clave1));
 						if( ($this->status($clave[0])) || ($this->status($clave[1])) )
 						{
+							//echo 'entro 1'."<br/>";
 							$query= "UPDATE products SET  product_next_update ='".date("Y-m-d")." 23:23:23', product_status = 0  WHERE product_clave_cva='".$this->catalogo_cva[$i]."'";	
 							//echo $query."<br/>";
 							mysql_query($query);
@@ -165,6 +168,7 @@
 						{
 							if( ($tfecha[0] < 2020) && ($this->product_status[$i] == 1))
 							{
+								//echo 'entro 2'."<br/>";
 								$query= "UPDATE products SET  product_next_update ='".date("Y-m-d")." 23:23:23', product_status = 0  WHERE product_clave_cva='".$this->catalogo_cva[$i]."'";	
 								//echo $query."<br/>"; 		
 								mysql_query($query);
@@ -176,13 +180,15 @@
 						{
 							if($this->product_stock[$i] > 0)
 							{
-								$query= "-UPDATE products SET  product_next_update ='".date("Y-m-d")." 23:23:23', product_status = 0  WHERE product_clave_cva='".$this->catalogo_cva[$i]."'";	
+								//echo 'entro 3'."<br/>";
+								$query= "UPDATE products SET  product_next_update ='".date("Y-m-d")." 23:23:23', product_status = 0  WHERE product_clave_cva='".$this->catalogo_cva[$i]."'";	
 								//echo $query."<br/>"; 		
 								mysql_query($query);
 							}
 							else
 							{
-								$query= "--UPDATE products SET  product_next_update ='2020-12-31 01:00:00', product_status = 0  WHERE product_clave_cva='".$this->catalogo_cva[$i]."'";
+								//echo 'entro 4'."<br/>";
+								$query= "UPDATE products SET  product_next_update ='2020-12-31 01:00:00', product_status = 0  WHERE product_clave_cva='".$this->catalogo_cva[$i]."'";
 								//echo $query."<br/>"; 	
 								mysql_query($query);
 							}	

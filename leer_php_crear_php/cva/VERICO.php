@@ -30,13 +30,14 @@
 	include '../include/es.php';
 	//include 'conexion.php';
 ?>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <?php
 	class Update 
 	{
 		
 		//declaracion de atributos privados
 		private $sXML = "",$catalogo_new  = array();
-		private $catalogo_cva  = array(), $product_category = array(), $product_next_update = array(), $product_status= array();
+		private $catalogo_cva  = array(), $product_category = array(), $product_next_update = array(), $product_status= array(),$product_stock = array();
 		
 		function __construct() 
 		{
@@ -102,7 +103,7 @@
 		
 		function products()
 		{
-			$sql = "SELECT product_clave_cva, product_category, product_next_update, product_status FROM products WHERE product_clave_cva <> '' AND product_brand = 110 ORDER BY product_clave_cva ASC";
+			$sql = "SELECT product_clave_cva, product_category, product_next_update, product_status, product_stock FROM products WHERE product_clave_cva <> '' AND product_brand = 110 ORDER BY product_clave_cva ASC";
 			$catalogo_cva_sql = mysql_query($sql);
 			$to = mysql_num_rows(mysql_query($sql));
 			if($to!=0)
@@ -112,39 +113,80 @@
 					$this->product_category[] = $row[1];
 					$this->product_next_update[] = $row[2];
 					$this->product_status[] = $row[3];
+					$this->product_stock[] = $row[4];
 				}
 				$to = 1;
 			} 
 			return $to;
 		}
 		
-
+		function status($cva)
+		{
+			$sql = "SELECT product_status FROM products WHERE `product_clave_cva`= '".$cva."' LIMIT 1";
+			$result = mysql_query($sql);
+			$row = mysql_fetch_array($result);
+			return $row[0];
+		}
 		
 		function eliminados()
 		{
 			$query="";
+			$permiso = FALSE;
 			$size = sizeof($this->catalogo_cva);
 			//echo count($this->catalogo_cva);
 			for ($i=0; $i < $size; $i++) 
 			{
 				if(!in_array($this->catalogo_cva[$i], $this->catalogo_new))
 				{
-					$clave = $i;
-					$tfecha = explode("-", $this->product_next_update[$i]);
-					$temp = '';
 					$query = '';
+					$temp = '';
+					$true = strstr($this->catalogo_cva[$i], ',', TRUE);
+					$tfecha = explode("-", $this->product_next_update[$i]);
 					$temp = $this->Clave_Unica($this->catalogo_cva[$i]);
-					if($temp==TRUE)
+					if($true)
 					{
-						if( ($tfecha[0] < 2020) && ($this->product_status[$i] == 1))
+						$clave = explode(",", str_replace(" ","", trim($this->catalogo_cva[$i])) );
+						if( ($this->status($clave[0])) || ($this->status($clave[1])) )
 						{
 							$query= "UPDATE products SET  product_next_update ='".date("Y-m-d")." 23:23:23', product_status = 0  WHERE product_clave_cva='".$this->catalogo_cva[$i]."'";	
+							//echo $query."<br/>";
 							mysql_query($query);
+							$permiso = TRUE; 	
+						}
+						else
+							$permiso = FALSE;	
+					}
+					else
+						$permiso = FALSE;
+					
+					if($temp==TRUE)
+					{
+						if($permiso == FALSE)
+						{
+							if( ($tfecha[0] < 2020) && ($this->product_status[$i] == 1))
+							{
+								$query= "UPDATE products SET  product_next_update ='".date("Y-m-d")." 23:23:23', product_status = 0  WHERE product_clave_cva='".$this->catalogo_cva[$i]."'";	
+								//echo $query."<br/>"; 		
+								mysql_query($query);
+							}
 						}
 					}
 					else {
-						$query= "UPDATE products SET  product_next_update ='2020-12-31 01:00:00', product_status = 0  WHERE product_clave_cva='".$this->catalogo_cva[$i]."'";
-						mysql_query($query);
+						if($permiso == FALSE)
+						{
+							if($this->product_stock[$i] > 0)
+							{
+								$query= "UPDATE products SET  product_next_update ='".date("Y-m-d")." 23:23:23', product_status = 0  WHERE product_clave_cva='".$this->catalogo_cva[$i]."'";	
+								//echo $query."<br/>"; 		
+								mysql_query($query);
+							}
+							else
+							{
+								$query= "UPDATE products SET  product_next_update ='2020-12-31 01:00:00', product_status = 0  WHERE product_clave_cva='".$this->catalogo_cva[$i]."'";
+								//echo $query."<br/>"; 	
+								mysql_query($query);
+							}	
+						}
 					}
 				}
 			}
@@ -168,10 +210,12 @@
 		
 		function day($years, $months, $days)
 		{
-			//dia Actual
-			$year = date("Y");
-			$month = date("m");
-			$day = date("d");			
+			//fecha actual hoy
+			date_default_timezone_set("America/Mexico_City");
+			$hoy = explode ("-", date('Y-m-d'));
+			$year = $hoy[0];
+			$month = $hoy[1];
+			$day = $hoy[2];	
 			//Calculo diferencias
 			$y = $years - $year;
 			$d = $days - $day;
@@ -182,14 +226,7 @@
 			if($y == 0)
 			{
 				if($m == 0)
-				{
-					if ($d>=0 && $d<6) 
-						return '0';
-					else
-					{
-						return ($d<0) ? '0' : '1';
-					}
-				}	
+					return ($d>=0 && $d<6) ? '0' : '1';
 				else 
 				{
 					if($m>0)
@@ -262,14 +299,14 @@
 								$p = (float) $this->google($dolar, $item->tipocambio);
 								$product_price_mx = $this->load_price($this->product_category[$clave], $p);	
 								$sql = "UPDATE products SET product_buy_mx = " . $p  . " , product_status = 1, product_featured = 0, product_featured_end ='0000-00-00 00:00:00', product_price_mx =".$product_price_mx.",\n".
-								" product_buy_mx_offer = 0.00 , product_next_update ='".date("Y-m-d")." 19:00:00'+ INTERVAL 7 DAY, product_updated = NOW()";
+								" product_buy_mx_offer = 0.00 , product_next_update ='".date("Y-m-d")." 19:00:00' + INTERVAL 5 DAY, product_updated = NOW()";
 								$dolares = TRUE;
 							}
 							else 
 							{
 								$product_price_mx  = $this->load_price($this->product_category[$clave], $item->precio);
 								$sql = "UPDATE products SET product_buy_mx = " . $item->precio  . " , product_status = 1, product_featured = 0, product_featured_end ='0000-00-00 00:00:00',\n".
-								" product_buy_mx_offer = 0.00 ,  product_price_mx =".$product_price_mx." , product_next_update ='".date("Y-m-d")." 19:00:00'+ INTERVAL 7 DAY, product_updated = NOW()";
+								" product_buy_mx_offer = 0.00 ,  product_price_mx =".$product_price_mx." , product_next_update ='".date("Y-m-d")." 19:00:00' + INTERVAL 5 DAY, product_updated = NOW()";
 								$dolares = FALSE;
 							}
 							if($item->PrecioDescuento!="Sin Descuento")
